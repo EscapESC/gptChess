@@ -1,3 +1,27 @@
-body{
-    background-color: rgba(48,46,43,255);
+:root {
+    --whiteSquare: #eeeed2;
+    --darkSquare: #769656;
+    --yellowEffect: #fcfe32;
+    --uiDarker: #262522;
+    --uiDark: #302e2b;
+}
+
+body {
+    background-color: var(--uiDark);
+    height: 100vh;
+    display: flex;
+    justify-content: center;  /* Horizontal center */
+    align-items: center; 
+    margin: 0px;
+}
+
+#board {
+    background-color: var(--uiDarker);
+    margin: auto;
+    width: 90vh;
+    height: 90vh;
+    background-image: url("images/board.png");
+    background-size: 25%;
+    image-rendering: pixelated;
+
 }
