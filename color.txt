@@ -1,0 +1,5 @@
+rgba(238, 238, 210, 255) #eeeed2 //White square
+rgba(118, 150, 86, 255) #769656 //Dark square
+rgba(252, 254, 50, 0.5) #fcfe32 //Yellow effect
+rgba(38,37,34,255) #262522 //UI darker
+rgba(48,46,43,255) #302e2b //UI dark
