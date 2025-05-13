@@ -3,7 +3,7 @@ let captureSound = new Audio("sounds/capture.mp3");
 
 class board {
 
-    constructor() {
+    constructor(color) {
 
         this.gameID;
 
@@ -11,9 +11,9 @@ class board {
 
         this.pieces = [];
 
-        this.pColor = "w";
+        this.pColor = color;
 
-        startNewGame();
+        startNewGame(color);
 
         populate(this);
 
@@ -102,11 +102,16 @@ class piece {
 
 
     movePiece(posX, posY){
+        console.log(this.type+" from "+this.x+this.y+" to "+posX+posY);
+        
+        if(this.color == chessBoard.pColor && chessBoard.turn == chessBoard.pColor){
+            sendMoveUpdate(this.x, this.y,posX, posY);
+        }
+        
+        let caturePiece = pieceAt(posX, posY);
 
         this.x = posX;
-
         this.y = posY;
-
 
         this.object.style.left = (this.x-1) * 11.25 + "vh";
 
@@ -117,21 +122,89 @@ class piece {
         } else {
             chessBoard.turn = "w";
         }
-        
-        moveSound.play();
+
+        if(caturePiece != null && caturePiece != this){
+            if (caturePiece.type == "king") {
+                if(caturePiece.color == "w"){
+                    console.log("BLACK HAS WON");
+                    document.getElementById("wintext").innerText = "BLACK HAS WON";
+                    document.getElementById("wintext").style.color = "black";
+                }
+                else{
+                    console.log("WHITE HAS WON");
+                    document.getElementById("wintext").innerText = "WHITE HAS WON";
+                    document.getElementById("wintext").style.color = "white";
+                }
+                document.getElementById("win").style.visibility = "visible";
+                document.getElementById("win").style.top = "50%";
+            }
+            caturePiece.die()
+            captureSound.play()
+        }
+        else{
+            moveSound.play();
+        }
 
         this.hasMoved = true;
     }
 
+    die(){
+        for(let i = 0; i < chessBoard.pieces.length; i++){
+            if(chessBoard.pieces[i] == this){
+                chessBoard.pieces.splice(i,1);
+                this.object.remove();
+                break;
+            }
+        }
+    }
+
 }
 
-async function startNewGame() {
+async function startNewGame(color) {
     try {
-        const response = await fetch('127.0.0.1/chess/api');
+        const response = await fetch('http://127.0.0.1:5000/chess/api/newgame',{method: 'POST',headers: {'Content-Type': 'application/json',},body: JSON.stringify({color:color}),});
         if (response.ok) {
             const data = await response.json();
             console.log(data);
-            chessBoard.gameID = data;
+            chessBoard.gameID = data.gameid;
+            if(color == "b"){
+                pieceAt(data.move.from[0], data.move.from[1]).movePiece(data.move.to[0],data.move.to[1]);
+                console.log(data.move.com)
+                document.getElementById('chat').innerHTML += "<br><br>"+data.move.com;
+            }
+        } else {
+            throw new Error('Failed to fetch data');
+        }
+    } catch (error) {
+        console.error('Error:', error); 
+    }
+}
+
+async function sendMoveUpdate(orX, orY, newX, newY){
+    try {
+        const response = await fetch('http://127.0.0.1:5000/chess/api/move',{
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({gameid : chessBoard.gameID,from : {orX:numtoa(orX), orY}, to : {newX:numtoa(newX), newY}}),
+        });
+        if (response.ok) {
+            const data = await response.json();
+            let tempPiece = pieceAt(data.move.from[0], data.move.from[1])
+            console.log(data.move.com)
+            document.getElementById('chat').innerHTML += "<br>"+data.move.com;
+            if(tempPiece != null){
+                tempPiece.movePiece(data.move.to[0],data.move.to[1]);
+            }
+            else{
+                if (chessBoard.turn == "w") {
+                    chessBoard.turn = "b";
+                } else {
+                    chessBoard.turn = "w";
+                }
+                console.log("ChatGPT tried making a move with an nonexistant piece")
+            }
         } else {
             throw new Error('Failed to fetch data');
         }
@@ -143,7 +216,7 @@ async function startNewGame() {
 
 function populate(boardInstance) {
 
-    const b = 'b'; //yes 
+    const b = 'b';
 
     const w = 'w';
 
@@ -241,4 +314,14 @@ function pieceColorAt(posX,posY){
     return "none";
 }
 
-chessBoard = new board()
+function numtoa(num){
+    alphabet = ["0","a","b","c","d","e","f","g","h"];
+    return alphabet[num];
+}
+
+function charToInt(c) {
+    if (!/^[a-zA-Z]$/.test(c)) return null;
+    return c.toLowerCase().charCodeAt(0) - 96;
+}
+
+chessBoard = new board('w')

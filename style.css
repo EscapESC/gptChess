@@ -40,3 +40,69 @@ body {
 .selected{
     background-color: rgba(252, 254, 50, 0.5);
 }
+
+#win{
+    visibility: hidden;
+    position: fixed;
+    top: -50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50vw;
+    height: 25vh;
+    border: #455e2b solid 10px;
+    background-color: #455e2b;
+    border-radius: 10px;
+    transition: all 0.5s;
+}
+
+#wintext{
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: table;
+    margin: 0 auto;
+    font-size: 4vw;
+    margin-top: 12.5vh;
+    transform: translate(0px, -50%);
+}
+
+#chatgpt{
+    position: absolute;
+    top: 50%;
+    left: calc(50% + 45vh + 20px); /* 50% from center + half the board width */
+    transform: translateY(-50%);
+    background-color: var(--uiDarker);
+    border: 10px solid var(--uiDarker);
+    width: 15vw;
+    height: 65vh;
+    border-radius: 10px;
+}
+
+#main {
+    display: flex;
+    align-items: center;
+    gap: 2vw; /* spacing between board and chat box */
+}
+#restart {
+    display: block;
+    text-align: center;
+    color: white;
+    text-decoration: none;
+    font-size: 2vw;
+    margin-top: -5vh
+}
+
+*{
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#chat {
+    position: absolute;
+    width: 100%;
+    height: 90%;
+    top: 10%;
+    display: flex;
+    justify-content: left;
+    align-items: flex-end;
+    padding-bottom: 1vh;
+    color: white;
+    overflow: hidden;
+}

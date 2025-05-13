@@ -8,10 +8,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="images/favicon.ico">
     <link rel="stylesheet" href="style.css">
-    <title>GPTchess</title>
+    <title>GPTchess - Madness</title>
 </head>
 <body>
-    <div id="board"></div>
+    <div id="main">
+        <div id="board"></div>
+        <div id="chatgpt">
+            <b style="text-align: center; width: 100%; position: absolute; font-size: 2.5vw;">ChatGPT</b>
+            <div id="chat"></div>
+        </div>
+        <div id="win"><b id="wintext">BLACK HAS WON</b><a href="" id="restart">RESTART</a></div>
+    </div>
 </body>
 </html>
 
