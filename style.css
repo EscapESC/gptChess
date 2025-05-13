@@ -17,6 +17,7 @@ body {
 
 #board {
     background-color: var(--uiDarker);
+    position: relative;
     margin: auto;
     width: 90vh;
     height: 90vh;
@@ -24,5 +25,18 @@ body {
     background-size: 100%;
     background-repeat: no-repeat;
     image-rendering: pixelated;
+}
 
+.piece{
+    background-color: rgba(252, 254, 50, 0.0);
+    position: absolute;
+    background-size: cover;
+    image-rendering: auto;
+    width: 11.25vh;
+    height: 11.25vh;
+    transition: top 0.15s, left 0.15s;
+}
+
+.selected{
+    background-color: rgba(252, 254, 50, 0.5);
 }
