@@ -105,4 +105,5 @@ body {
     padding-bottom: 1vh;
     color: white;
     overflow: hidden;
+    transition: all 0.5s;
 }

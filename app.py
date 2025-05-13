@@ -5,8 +5,9 @@ import secrets
 import time
 import json
 import threading
+import random
 
-promptFormat = ' | Write nothing but the format FORMAT {"piece":PieceType,"from":[x,y], "to":[x,y],"com":FunCommentOnYourMove}'
+promptFormat = ' | Instead of alphabet use numbers 1-8. Write nothing but the format FORMAT {"piece":"PIECETYPE" , "from":[x,y], "to":[x,y],"capture":"CAPTUREDPIECETYPE","com":FUNCOMMENTONYOURTURN}'
 
 key = open("../key.txt", "r").read()
 
@@ -47,6 +48,8 @@ class game:
     def close(self):
         pass
 
+personalities = ["","French steriotype","Czech steriotype","Pirate steriotype","Personality: Napoleon Bonaparte storiotype (can never be wrong)","Personality:Steven he from youtube","","can only speak in ads slogans","","","memes","tf2 soldier","","Personality: Donald Trump"]
+
 @app.route("/chess/api/newgame", methods=['POST'])
 def newGame():
     data = request.get_json(silent=True) or {}
@@ -60,11 +63,11 @@ def newGame():
         tempGame.color = "w"
 
     if tempGame.color == 'b':
-        aiInput = 'You are now playing chess as white, play your first move. Instead of alphabet use 1-8. Write nothing but the format FORMAT {"from":[x,y], "to":[x,y]}'
-        tempGame.chatHistory += 'You are playing chess as white. Instead of alphabet use 1-8. Tripple check your moves. Game History: '
+        aiInput = 'You are now playing chess as white, play your first move. Instead of alphabet use numbers 1-8. Write nothing but the format FORMAT {"piece":PIECETYPE , "from":[x,y], "to":[x,y],"capture":True/False,"com":FUNCOMMENTONYOURTURN'
+        tempGame.chatHistory += 'You are playing chess as white.'+personalities[random.randrange(0,len(personalities))]+' Instead of alphabet use numbers 1-8. Tripple check your moves. Game History: '
     else:
-        aiInput = 'You are now playing chess as black, for now, wait for moves. Instead of alphabet use 1-8. Write nothing but the format FORMAT {"from":[x,y], "to":[x,y]}'
-        tempGame.chatHistory += 'You are playing chess as black. Instead of alphabet use 1-8.c Tripple check your moves. Game History: ' 
+        aiInput = 'You are now playing chess as black, for now, wait for moves. Instead of alphabet use numbers 1-8. Write nothing but the format FORMAT {"piece":PIECETYPE , "from":[x,y], "to":[x,y],"capture":True/False,"com":FUNCOMMENTONYOURTURN'
+        tempGame.chatHistory += 'You are playing chess as black.'+personalities[random.randrange(0,len(personalities))]+' Instead of alphabet use numbers 1-8.c Tripple check your moves. Game History: ' 
 
     if tempGame.color == 'w':
         return jsonify({"gameid":tempGame.gameID})
@@ -89,11 +92,13 @@ def playMove():
     
     orgPos = data.get('from', {})
     newPos = data.get('to', {})
-    if not orgPos or not newPos:
+    piece = data.get('piece')
+    capture = data.get('cap')
+    if not orgPos or not newPos or not piece or not capture:
         return jsonify({"error": "Json error"}), 404
 
     print(game_instance.chatHistory)
-    game_instance.chatHistory += " | "+'"{from:"['+str(orgPos['orX'])+","+str(orgPos['orY'])+'], "to":['+str(newPos['newX'])+","+str(newPos['newY'])+']}'
+    game_instance.chatHistory += " | "+'"{"piece":'+piece+' "from:"['+str(orgPos['orX'])+","+str(orgPos['orY'])+'], "to":['+str(newPos['newX'])+","+str(newPos['newY'])+'], "cap":'+str(capture)+'}'
     
     while True:
         response = client.responses.create(model="gpt-4.1",input=game_instance.chatHistory+promptFormat)
@@ -102,6 +107,7 @@ def playMove():
             json.loads(response.output_text)
         except:
             AllGood = False
+            print("ERROR "+response.output_text)
         if AllGood:
             break
 

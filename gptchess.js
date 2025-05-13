@@ -103,12 +103,16 @@ class piece {
 
     movePiece(posX, posY){
         console.log(this.type+" from "+this.x+this.y+" to "+posX+posY);
-        
-        if(this.color == chessBoard.pColor && chessBoard.turn == chessBoard.pColor){
-            sendMoveUpdate(this.x, this.y,posX, posY);
+
+        let capturePiece = pieceAt(posX, posY);
+        let captured = "none"
+        if(capturePiece != null){
+            captured = capturePiece.type;
         }
-        
-        let caturePiece = pieceAt(posX, posY);
+
+        if(this.color == chessBoard.pColor && chessBoard.turn == chessBoard.pColor){
+            sendMoveUpdate(this.type,this.x, this.y,posX, posY,captured);
+        }
 
         this.x = posX;
         this.y = posY;
@@ -123,9 +127,9 @@ class piece {
             chessBoard.turn = "w";
         }
 
-        if(caturePiece != null && caturePiece != this){
-            if (caturePiece.type == "king") {
-                if(caturePiece.color == "w"){
+        if(capturePiece != null && capturePiece != this){
+            if (capturePiece.type == "king") {
+                if(capturePiece.color == "w"){
                     console.log("BLACK HAS WON");
                     document.getElementById("wintext").innerText = "BLACK HAS WON";
                     document.getElementById("wintext").style.color = "black";
@@ -138,7 +142,7 @@ class piece {
                 document.getElementById("win").style.visibility = "visible";
                 document.getElementById("win").style.top = "50%";
             }
-            caturePiece.die()
+            capturePiece.die()
             captureSound.play()
         }
         else{
@@ -180,20 +184,19 @@ async function startNewGame(color) {
     }
 }
 
-async function sendMoveUpdate(orX, orY, newX, newY){
+async function sendMoveUpdate(type,orX, orY, newX, newY, capture){
     try {
         const response = await fetch('http://127.0.0.1:5000/chess/api/move',{
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({gameid : chessBoard.gameID,from : {orX:numtoa(orX), orY}, to : {newX:numtoa(newX), newY}}),
-        });
+        body: JSON.stringify({gameid : chessBoard.gameID,piece : type,from : {orX:numtoa(orX), orY}, to : {newX:numtoa(newX), newY}, cap:capture})});
         if (response.ok) {
             const data = await response.json();
             let tempPiece = pieceAt(data.move.from[0], data.move.from[1])
             console.log(data.move.com)
-            document.getElementById('chat').innerHTML += "<br>"+data.move.com;
+            document.getElementById('chat').innerHTML += "<br><br>"+data.move.com;
             if(tempPiece != null){
                 tempPiece.movePiece(data.move.to[0],data.move.to[1]);
             }
