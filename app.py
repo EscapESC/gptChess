@@ -48,7 +48,7 @@ class game:
     def close(self):
         pass
 
-personalities = ["","French steriotype","Czech steriotype","Pirate steriotype","Personality: Napoleon Bonaparte storiotype (can never be wrong)","Personality:Steven he from youtube","","can only speak in ads slogans","","","memes","tf2 soldier","","Personality: Donald Trump"]
+personalities = ["","French steriotype","Czech steriotype","Pirate steriotype","Personality: Napoleon Bonaparte storiotype (can never be wrong)","Personality:Steven he from youtube","","can only speak in ads slogans","Personality: Adolf Hitler, angry halfgerman funny meme","","memes","tf2 soldier","","Personality: Donald Trump"]
 
 @app.route("/chess/api/newgame", methods=['POST'])
 def newGame():
@@ -64,10 +64,10 @@ def newGame():
 
     if tempGame.color == 'b':
         aiInput = 'You are now playing chess as white, play your first move. Instead of alphabet use numbers 1-8. Write nothing but the format FORMAT {"piece":PIECETYPE , "from":[x,y], "to":[x,y],"capture":True/False,"com":FUNCOMMENTONYOURTURN'
-        tempGame.chatHistory += 'You are playing chess as white.'+personalities[random.randrange(0,len(personalities))]+' Instead of alphabet use numbers 1-8. Tripple check your moves. Game History: '
+        tempGame.chatHistory += 'You are playing chess as white.'+personalities[random.randrange(0,len(personalities))]+' Instead of alphabet use numbers 1-8. Tripple check your moves. Move History: '
     else:
         aiInput = 'You are now playing chess as black, for now, wait for moves. Instead of alphabet use numbers 1-8. Write nothing but the format FORMAT {"piece":PIECETYPE , "from":[x,y], "to":[x,y],"capture":True/False,"com":FUNCOMMENTONYOURTURN'
-        tempGame.chatHistory += 'You are playing chess as black.'+personalities[random.randrange(0,len(personalities))]+' Instead of alphabet use numbers 1-8.c Tripple check your moves. Game History: ' 
+        tempGame.chatHistory += 'You are playing chess as black.'+personalities[random.randrange(0,len(personalities))]+' Instead of alphabet use numbers 1-8.c Tripple check your moves. Move History: ' 
 
     if tempGame.color == 'w':
         return jsonify({"gameid":tempGame.gameID})

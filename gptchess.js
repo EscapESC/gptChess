@@ -55,7 +55,6 @@ class board {
     addPiece(type, color, posX, posY) {
 
         this.pieces.push(new piece(type,color,posX,posY))
-
     }
 
 }
@@ -198,15 +197,20 @@ async function sendMoveUpdate(type,orX, orY, newX, newY, capture){
             console.log(data.move.com)
             document.getElementById('chat').innerHTML += "<br><br>"+data.move.com;
             if(tempPiece != null){
-                tempPiece.movePiece(data.move.to[0],data.move.to[1]);
+                if(tempPiece.type == data.move.piece && tempPiece.color == "b"){
+                    tempPiece.movePiece(data.move.to[0],data.move.to[1]);
+                }
+                else{
+                    tempPiece.die();
+                    chessBoard.addPiece(data.move.piece,chessBoard.pColor == "b" ? "w" : "b",data.move.from[0],data.move.from[1]);
+                    await new Promise(r => setTimeout(r, 1000));
+                    pieceAt(data.move.from[0], data.move.from[1]).movePiece(data.move.to[0],data.move.to[1]);
+                }
             }
             else{
-                if (chessBoard.turn == "w") {
-                    chessBoard.turn = "b";
-                } else {
-                    chessBoard.turn = "w";
-                }
-                console.log("ChatGPT tried making a move with an nonexistant piece")
+                chessBoard.addPiece(data.move.piece,chessBoard.pColor == "b" ? "w" : "b",data.move.from[0],data.move.from[1]);
+                await new Promise(r => setTimeout(r, 1000));
+                pieceAt(data.move.from[0], data.move.from[1]).movePiece(data.move.to[0],data.move.to[1]);
             }
         } else {
             throw new Error('Failed to fetch data');
